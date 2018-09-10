@@ -7,8 +7,9 @@
  */
 
 namespace App;
+use App\File;
 
-class Generator
+class FileGenerator
 {
     /**
      * @var File

@@ -7,9 +7,11 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use App\FileGenerator;
 use App\File;
 
-class GeneratorTest extends TestCase
+
+class FileGeneratorTest extends TestCase
 {
     public function tearDown()
     {
@@ -21,11 +23,14 @@ class GeneratorTest extends TestCase
      */
     public function it_works()
     {
-        $mockedFile = Mockery::mock(File::class);
+        $mockedFile = \Mockery::mock('File');
+        
         $mockedFile->shouldReceive('put')
             ->with('foo.txt','foo bar')
             ->once();
-        $generator = new \App\Generator($mockedFile);
+        
+        $generator = new FileGenerator($mockedFile);
+        
         $generator->fire();
     }
     
