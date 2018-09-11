@@ -52,4 +52,33 @@ class TaskRepositoryTest extends TestCase
 
         $this->assertEmpty($actual);
     }
+
+    /**
+     * @test
+     */
+    public function all_returns_tasks_when_query_has_results()
+    {
+        $result = Mockery::spy();
+
+        $result->num_rows = 2;
+
+        $result->shouldReceive('fetch_assoc')
+            ->andReturn(['note'=>'Task 1'],['note'=>'Task 2'],['note'=>'Task 3'],null);
+
+
+        $this->dbMock->shouldReceive('query')
+            ->with('SELECT note FROM tasks ORDER BY created DESC')
+            ->andReturn($result);
+
+        $actual = $this->taskRepository->all();
+
+
+
+        $this->assertSame('Task 1', $actual[0]->getNote());
+        $this->assertSame('Task 2', $actual[1]->getNote());
+        $this->assertSame('Task 3', $actual[2]->getNote());
+
+        $result->shouldHaveReceived('free');
+
+    }
 }
