@@ -23,7 +23,7 @@ class FileGeneratorTest extends TestCase
      */
     public function it_works()
     {
-        $mockedFile = \Mockery::mock('File');
+        $mockedFile = Mockery::mock('App\File');
         
         $mockedFile->shouldReceive('put')
             ->with('foo.txt','foo bar')

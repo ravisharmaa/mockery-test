@@ -7,7 +7,7 @@
  */
 
 namespace App;
-use App\File;
+
 
 class FileGenerator
 {

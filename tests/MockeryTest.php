@@ -15,9 +15,18 @@ class MockeryTest extends TestCase
      */
     public function that_it_mocks_an_object()
     {
-        $mock = Mockery::mock();
-        $mock->shouldReceive('something','somethingElse')->andReturns(5);
+        $mock = Mockery::mock()->shouldIgnoreMissing();
+        $mock->shouldReceive('something')->andReturns(5);
         $this->assertSame(5, $mock->something());
-        $this->assertSame(5, $mock->somethingElse());
+        $this->assertNull($mock->somethingElse());
+    }
+
+    /**
+     * @test
+     */
+
+    public function test_a_mock_object()
+    {
+        $mock = Mockery::mock();
     }
 }
