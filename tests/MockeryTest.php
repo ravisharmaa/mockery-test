@@ -27,6 +27,8 @@ class MockeryTest extends TestCase
 
     public function test_a_mock_object()
     {
-        $mock = Mockery::mock();
+        $mock = Mockery::mock('App\Task');
+        $mock->shouldReceive('getNote')->andReturn('whatever');
+        $this->assertSame('whatever', $mock->getNote());
     }
 }
