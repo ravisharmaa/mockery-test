@@ -23,6 +23,7 @@ class FileGeneratorTest extends TestCase
      */
     public function it_works()
     {
+        /*Must add fully qualified path name*/
         $mockedFile = Mockery::mock('App\File');
         
         $mockedFile->shouldReceive('put')
