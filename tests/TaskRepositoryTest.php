@@ -214,8 +214,22 @@ class TaskRepositoryTest extends TestCase
         $this->assertSame('Task 1', $actual[0]->getNote());
     }
 
+    /**
+     * @test
+     */
+    public function delete_throws_an_exception()
+    {
+        $this->dbMock->shouldReceive('prepare')
+            ->with('DELETE FROM tasks WHERE id = ?')
+            ->andReturn(false);
 
+        $this->dbMock->shouldReceive('getError')
+            ->andReturn('Exception Found');
 
+        $this->expectException(Exception::class);
 
+        $this->expectExceptionMessage('Exception Found');
 
+        $this->taskRepository->delete(1);
+    }
 }

@@ -104,10 +104,27 @@ class TaskRepository
         return $tasks;
     }
 
-    public function delete()
+    /**
+     * @param $id
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    public function delete($id)
     {
+        $sql = 'DELETE FROM tasks WHERE id = ?';
+        $stmt = $this->dbConnection->prepare($sql);
 
+        if (!$stmt) {
+            throw new Exception($this->dbConnection->getError());
+        }
+        $stmt->bind_param('i', $id);
+
+        if (!$stmt->execute()) {
+            return false;
+        }
+
+        return true;
     }
-
-
 }
