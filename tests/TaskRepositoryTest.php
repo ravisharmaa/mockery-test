@@ -100,15 +100,46 @@ class TaskRepositoryTest extends TestCase
     /**
      * @test
      */
-
     public function create_returns_false()
     {
         $statement = Mockery::mock('mysql_stmt_mock');
+        $statement->shouldReceive('bind_param')
+            ->with('s', 'Task 1');
 
+        $statement->shouldReceive('execute')
+            ->andReturnFalse();
 
         $this->dbMock->shouldReceive('prepare')
             ->with('INSERT INTO tasks (note, created) VALUES (?, NOW())')
             ->andReturn($statement);
 
+        $actual = $this->taskRepository->create('Task 1');
+
+        $this->assertFalse($actual);
+    }
+    
+    /**
+     * @test
+     */
+
+    public function create_returns_the_note_created()
+    {
+        $statement = Mockery::spy('mysql_stmt_mock');
+
+        $statement->shouldReceive('bind_param')
+            ->with('s', 'Task 1');
+
+        $statement->shouldReceive('execute')
+            ->andReturnTrue();
+
+        $this->dbMock->shouldReceive('prepare')
+            ->with('INSERT INTO tasks (note, created) VALUES (?, NOW())')
+            ->andReturn($statement);
+
+        $actual = $this->taskRepository->create('Task 1');
+
+        $this->assertInstanceOf(\App\Task::class, $actual);
+
+        $this->assertSame('Task 1', $actual->getNote());
     }
 }
