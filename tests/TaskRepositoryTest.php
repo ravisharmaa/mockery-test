@@ -117,11 +117,10 @@ class TaskRepositoryTest extends TestCase
 
         $this->assertFalse($actual);
     }
-    
+
     /**
      * @test
      */
-
     public function create_returns_the_note_created()
     {
         $statement = Mockery::spy('mysql_stmt_mock');
@@ -142,4 +141,81 @@ class TaskRepositoryTest extends TestCase
 
         $this->assertSame('Task 1', $actual->getNote());
     }
+
+    /**
+     * @test
+     */
+    public function find_by_id_throws_exception()
+    {
+        $this->dbMock->shouldReceive('prepare')
+            ->with('SELECT * FROM tasks WHERE id = ?')
+            ->andReturn(false);
+
+        $this->dbMock->shouldReceive('getError')
+            ->andReturn('Exception Found');
+
+        $this->expectException(Exception::class);
+
+        $this->expectExceptionMessage('Exception Found');
+
+        $this->taskRepository->findById(1);
+    }
+
+    /**
+     * @test
+     */
+    public function find_by_id_returns_false_when_statement_cannot_be_executed()
+    {
+        $statement = Mockery::mock('mysqli_stmt_mock');
+        $statement->shouldReceive('bind_param')
+                ->with('i', 1);
+
+        $statement->shouldReceive('execute')
+            ->andReturnFalse();
+
+        $this->dbMock->shouldReceive('prepare')
+            ->with('SELECT * FROM tasks WHERE id = ?')
+            ->andReturn($statement);
+
+        $actual = $this->taskRepository->findById(1);
+
+        $this->assertFalse($actual);
+    }
+
+    /**
+     * @test
+     */
+    public function find_by_id_returns_the_task_found()
+    {
+        $result = Mockery::spy('mysqli_result_mock');
+
+        $result->shouldReceive('fetch_assoc')
+            ->andReturn(['note' => 'Task 1'], null);
+
+        $statement = Mockery::mock('mysqli_stmt_mock');
+
+        $statement->shouldReceive('execute')
+            ->andReturnTrue();
+
+        $statement->shouldReceive('bind_param')
+            ->with('i', 1);
+
+        $statement->shouldReceive('get_result')
+            ->andReturn($result);
+
+        $this->dbMock->shouldReceive('prepare')
+            ->with('SELECT * FROM tasks WHERE id = ?')
+            ->andReturn($statement);
+
+        $actual = $this->taskRepository->findById(1);
+
+        $this->assertInstanceOf(\App\Task::class, $actual[0]);
+
+        $this->assertSame('Task 1', $actual[0]->getNote());
+    }
+
+
+
+
+
 }
