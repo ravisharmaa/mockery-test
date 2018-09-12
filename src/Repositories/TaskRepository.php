@@ -29,7 +29,7 @@ class TaskRepository
     {
         $result = $this->dbConnection->query('SELECT note FROM tasks ORDER BY created DESC');
 
-        if ( $result === false || $result->num_rows === 0 ) {
+        if (false === $result || 0 === $result->num_rows) {
             return [];
         }
 

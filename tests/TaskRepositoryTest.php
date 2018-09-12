@@ -62,23 +62,53 @@ class TaskRepositoryTest extends TestCase
 
         $result->num_rows = 2;
 
-        $result->shouldReceive('fetch_assoc')
-            ->andReturn(['note'=>'Task 1'],['note'=>'Task 2'],['note'=>'Task 3'],null);
-
-
         $this->dbMock->shouldReceive('query')
             ->with('SELECT note FROM tasks ORDER BY created DESC')
             ->andReturn($result);
 
+        $result->shouldReceive('fetch_assoc')
+            ->andReturn(['note' => 'Task 1'], ['note' => 'Task 2'], ['note' => 'Task 3'], null);
+
         $actual = $this->taskRepository->all();
-
-
 
         $this->assertSame('Task 1', $actual[0]->getNote());
         $this->assertSame('Task 2', $actual[1]->getNote());
         $this->assertSame('Task 3', $actual[2]->getNote());
 
         $result->shouldHaveReceived('free');
+    }
+
+    /**
+     * @test
+     */
+    public function create_throws_exception()
+    {
+        $this->dbMock->shouldReceive('prepare')
+            ->with('INSERT INTO tasks (note, created) VALUES (?, NOW())')
+            ->andReturn(false);
+
+        $this->dbMock->shouldReceive('getError')
+            ->andReturn('oh No');
+
+        $this->expectException(Exception::class);
+
+        $this->expectExceptionMessage('oh No');
+
+        $this->taskRepository->create('Task 1');
+    }
+
+    /**
+     * @test
+     */
+
+    public function create_returns_false()
+    {
+        $statement = Mockery::mock('mysql_stmt_mock');
+
+
+        $this->dbMock->shouldReceive('prepare')
+            ->with('INSERT INTO tasks (note, created) VALUES (?, NOW())')
+            ->andReturn($statement);
 
     }
 }
