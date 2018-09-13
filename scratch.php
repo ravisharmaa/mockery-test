@@ -2,7 +2,7 @@
 
 $conn = new mysqli('localhost','root','','todo');
 
-/*$sql = 'select note from tasks where id = ?';
+$sql = 'select note from tasks where id = ?';
 
 $stmt = $conn->prepare($sql);
 
@@ -28,7 +28,7 @@ while ($data = $result->fetch_assoc()) {
 $result->free();
 
 
-*/
+
 
 $sql = 'DELETE from tasks where id = ?';
 $stmt = $conn->prepare($sql);

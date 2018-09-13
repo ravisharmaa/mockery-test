@@ -127,4 +127,17 @@ class TaskRepository
 
         return true;
     }
+
+    public function update($note, $id)
+    {
+        $sql = 'UPDATE tasks SET note = ? WHERE id = ?';
+        $stmt = $this->dbConnection->prepare($sql);
+
+        if (!$stmt) {
+            throw new Exception($this->dbConnection->getError());
+        }
+
+        $stmt->bind_param('is',$id,$note);
+        
+    }
 }
