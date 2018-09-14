@@ -1,7 +1,7 @@
 <?php
 
-$conn = new mysqli('localhost','root','','todo');
-
+$conn = new mysqli('localhost', 'root', '', 'todo');
+/*
 $sql = 'select note from tasks where id = ?';
 
 $stmt = $conn->prepare($sql);
@@ -42,4 +42,28 @@ if(!$stmt->execute()){
     return false;
 }
 return true;
+*/
+
+$sql = 'UPDATE tasks SET note = ? WHERE id = ?';
+$stmt = $conn->prepare($sql);
+
+if (!$stmt) {
+    throw  new Exception($conn->getError());
+}
+$stmt->bind_param('si',$note,$id);
+
+$id = 5;
+$note= "Update Task";
+
+if (! $stmt->execute()) {
+    return false;
+}
+
+$result = $stmt->execute();
+
+var_dump($result);
+
+
+
+
 

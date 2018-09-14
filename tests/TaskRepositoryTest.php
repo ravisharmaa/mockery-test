@@ -232,4 +232,67 @@ class TaskRepositoryTest extends TestCase
 
         $this->taskRepository->delete(1);
     }
+
+    /**
+     * @test
+     */
+    public function update_throws_an_exception()
+    {
+        $this->dbMock->shouldReceive('prepare')
+            ->with('UPDATE tasks SET note = ? WHERE id = ?')
+            ->andReturnFalse();
+
+        $this->dbMock->shouldReceive('getError')
+            ->andReturn('Exception Found');
+
+        $this->expectException(Exception::class);
+
+        $this->expectExceptionMessage('Exception Found');
+
+        $this->taskRepository->update('Update Task', 1);
+    }
+
+    /**
+     * @test
+     */
+    public function update_returns_false_when_statement_cannot_be_exceuted()
+    {
+        $statement = Mockery::mock('mysql_stmt_mock');
+
+        $statement->shouldReceive('bind_param')
+            ->with('si', 'Update Task', 1);
+
+        $statement->shouldReceive('execute')
+            ->andReturnFalse();
+
+        $this->dbMock->shouldReceive('prepare')
+            ->with('UPDATE tasks SET note = ? WHERE id = ?')
+            ->andReturn($statement);
+
+        $actual = $this->taskRepository->update('Update Task', 1);
+
+        $this->assertFalse($actual);
+    }
+
+    /**
+     * @test
+     */
+    public function update_returns_true_when_updated()
+    {
+        $statement = Mockery::mock('mysql_stmt_mock');
+
+        $statement->shouldReceive('bind_param')
+            ->with('si', 'Update Task', 1);
+
+        $statement->shouldReceive('execute')
+            ->andReturnTrue();
+
+        $this->dbMock->shouldReceive('prepare')
+            ->with('UPDATE tasks SET note = ? WHERE id = ?')
+            ->andReturn($statement);
+
+        $actual = $this->taskRepository->update('Update Task', 1);
+
+        $this->assertTrue($actual);
+    }
 }
